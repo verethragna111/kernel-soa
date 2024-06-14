@@ -54,6 +54,10 @@ void add_ready_queue(PCB *p) {
     int level = set_int_priority_level(LEVEL_3);
     int prio=p->priority;
     p->state=READY;
+
+    /* Inicializamos en el proceso el time_slice a 10 TICKS*/
+    if(p->time_slice == 0) p->time_slice=SLICE;
+
     insert_last(&ready_list[prio], p);
     set_bit(&ready_queues_mask, prio);
 
@@ -72,15 +76,18 @@ void add_ready_queue(PCB *p) {
 }
 
 
-// elimina el proceso actual de la cola de listos
+/* Elimina el proceso actual de la cola de listos */
+
 void remove_ready_queue(void) {
 
     int level = set_int_priority_level(LEVEL_3);
     int prio = current->priority;
     remove_elem(&ready_list[prio], current);
+    
     if (list_is_empty(&ready_list[prio])) {
         clear_bit(&ready_queues_mask, prio);
     }
+    
     set_int_priority_level(level);
 }
 
@@ -95,8 +102,11 @@ PCB * scheduler(void) {
     PCB *p = NULL;
     p = iterator_next(&it);
     return p;
+
 }
 
 void soft_interrupt_handler(void) {
+
     pick_and_activate_next_task(1); // Salva el contexto del proceso actual
+
 }

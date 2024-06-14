@@ -37,7 +37,9 @@ typedef struct PCB {
     context context;	// copia de regs. de UCP
     void *stack;	// dir. inicial de la pila
     void *mem;		// descriptor del mapa de memoria
-    int wake_up_time;
+    int wake_up_time;   //Tiempo de bloqueo de proceso por el proc_sleep
+    int time_slice;
+
 } PCB;
 
 // Variable global que identifica el proceso actual
@@ -69,6 +71,8 @@ void counter_down(void);
 void add_sleep_queue(PCB *p);
 
 void remove_sleep_queue(PCB *p);
+
+void reduce_time_slice(void);
 
 #endif /* _PROCESS_H */
 

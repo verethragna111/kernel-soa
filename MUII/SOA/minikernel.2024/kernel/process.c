@@ -163,6 +163,25 @@ void add_sleep_queue(PCB *p){
 }
 
 void remove_sleep_queue(PCB *p){
+
     remove_elem(&dormidos, p);
     add_ready_queue(p);
+}
+
+void reduce_time_slice(void){
+ 
+    if(current!=NULL){
+    
+    int time = current->time_slice;
+    current->time_slice = time - 1;
+    
+    if(current->time_slice == 0){
+        int level = set_int_priority_level(LEVEL_3);
+        remove_ready_queue();
+        add_ready_queue(current);  // Se reinsertará con una nueva rodaja
+        pick_and_activate_next_task(1);
+        set_int_priority_level(level);
+    }
+    
+    }
 }

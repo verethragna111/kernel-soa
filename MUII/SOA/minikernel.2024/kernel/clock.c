@@ -28,9 +28,13 @@ void init_clock_module(void) {
 }
 
 void clock_exception_handler(void){
+
     counter_down();
+    reduce_time_slice();
     printk("-> INT. RELOJ\n");
+    
     return;
 }
+
 
 
