@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "common.h": "c",
+        "exception.h": "c",
+        "hal.h": "c"
+    }
+}
