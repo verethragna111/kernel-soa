@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "common.h": "c",
+        "exception.h": "c",
+        "hal.h": "c",
+        "interrupt.h": "c",
+        "clock.h": "c",
+        "cstdlib": "c",
+        "list.h": "c",
+        "sched.h": "c",
+        "process.h": "c",
+        "syscall.h": "c",
+        "bitmask.h": "c",
+        "*.tcc": "c",
+        "list": "c"
+    }
+}
