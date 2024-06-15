@@ -18,8 +18,8 @@
 #include "sched.h"
 
 /* Variables */
-static char term_buffer[TERM_BUF_SIZE];
-static fifo term_fifo;
+static char t_buffer[TERM_BUF_SIZE];
+static fifo t_fifo;
 static list blocked_queue;
 
 
@@ -29,7 +29,7 @@ static list blocked_queue;
 
 void init_terminal_module(void) {
     init_keyboard_controller();
-    fifo_init(&term_fifo, sizeof(char), TERM_BUF_SIZE, term_buffer);
+    fifo_init(&t_fifo, sizeof(char), TERM_BUF_SIZE, t_buffer);
     register_irq_handler(KEYBOARD_INT,keyboard_exception_handler);
 
     return;
@@ -54,44 +54,43 @@ void keyboard_exception_handler(void){
 
 
 void keyboard_exception_handler(void) {
-    printk("prueba de que entra \n");
+    int level = set_int_priority_level(LEVEL_2);
+    printf("INT. TECLADO\n");
     char c ;
     c = read_port(KEYBOARD_PORT); // leer el carácter desde el hardware
-    
-    if (!fifo_is_full(&term_fifo)) {
-        fifo_in(&term_fifo, &c);
+    print_terminal(&c, 1); 
+    printk("\n");
+
+    if (!fifo_is_full(&t_fifo)) {
+        fifo_in(&t_fifo, &c);
         
         // Desbloquear el primer proceso en la cola de bloqueo si lo hay
         if (!list_is_empty(&blocked_queue)) {
-            iterator it; 
-            iterator_init(&blocked_queue,&it);
-            PCB *process = (PCB *)iterator_next;
-            add_ready_queue(process);
+            PCB * p = queue_priority(&blocked_queue);
+            remove_elem(&blocked_queue,p);
+            add_ready_queue(p);
         }
     } else {
         printk("Buffer lleno, carácter descartado\n");
     }
+    set_int_priority_level(level);
 }
 
 int do_get_char(void) {
     char c;
 
-    // Inhibir interrupciones del terminal
-    int level = set_int_priority_level(LEVEL_3);
-
-    // Verificar si hay datos disponibles en el buffer
-    while (fifo_is_empty(&term_fifo)) {
-        // No hay datos, bloquear el proceso
+    while (fifo_is_empty(&t_fifo)) {
+        int level = set_int_priority_level(LEVEL_2);
+        current->state = BLOCKED;
+        insert_last(&blocked_queue,current);
+        remove_ready_queue();
         pick_and_activate_next_task(1);
-
+        set_int_priority_level(level);
     }
 
-    if(!fifo_is_empty(&term_fifo)){
-        fifo_out(&term_fifo,&c);
-        printk("Caracter: %c",c);
-    }
-
-    // Habilitar interrupciones del terminal
+    int level = set_int_priority_level(LEVEL_2);
+    fifo_out(&t_fifo,&c);
+    printk("Caracter: %c",c);
     set_int_priority_level(level);
 
     return c;

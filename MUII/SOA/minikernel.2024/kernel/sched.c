@@ -22,9 +22,6 @@ list ready_list[NR_PRIO];
 
 unsigned int ready_queues_mask = 0;
 
-//Variable global de lista de procesos bloqueados
-//list sleep_queue;
-
 
 // Inicializa las estructuras de datos del planificador
 void init_sched_module(void) {
@@ -57,8 +54,6 @@ void add_ready_queue(PCB *p) {
     if(p->time_slice == 0 || p->state== BLOCKED) p->time_slice=SLICE;
     
     p->state=READY;
-
-    
 
     insert_last(&ready_list[prio], p);
     set_bit(&ready_queues_mask, prio);
@@ -108,7 +103,7 @@ PCB * scheduler(void) {
 }
 
 void soft_interrupt_handler(void) {
-
+    printk("-> ACTIVA INTERRUPCIÓN SOFTWARE \n");
     pick_and_activate_next_task(1); // Salva el contexto del proceso actual
 
 }

@@ -61,10 +61,14 @@ void pick_and_activate_next_task(int save_ctx) {
 
 /* Implementación de la llamada al sistema create_process */
 int do_create_process(char *prog, int prio){
+
+
     void * image, *initial_pc;
     int error=0;
     int nr_proc;
     PCB *p_new;
+
+    int level = set_int_priority_level(LEVEL_3);
 
     if (check_syscall_arg_string_read(prog, MAX_EXEC_NAMELENGTH) == -1)
         return -1;
@@ -93,6 +97,7 @@ int do_create_process(char *prog, int prio){
     }
     else
         error= -1; /* fallo al crear imagen */
+    set_int_priority_level(level);
     return error;
 }
 /* Implementación de la llamada al sistema exit_process */
@@ -100,9 +105,14 @@ int do_exit_process(void){
     printk("-> TERMINA PROCESO %d\n", current->pid);
     release_image(current->mem);
     current->state=FINISHED;
+
+    int level = set_int_priority_level(LEVEL_3);
     remove_ready_queue();
     release_stack(current->stack);
     pick_and_activate_next_task(0); // no salva estado del previo
+
+    set_int_priority_level(level);
+
     return 0; /* no debería llegar aquí ya que el proceso terminó */
 }
 void init_process_module(void) {
@@ -148,6 +158,8 @@ void counter_down(void){
     iterator_init(&dormidos, &it);
     while (iterator_has_next(&it))
     {
+        
+
         PCB * p = (PCB *)iterator_next(&it);
         int contador = p->wake_up_time -1; 
         p->wake_up_time = contador; 
@@ -163,9 +175,10 @@ void add_sleep_queue(PCB *p){
 }
 
 void remove_sleep_queue(PCB *p){
-
+    int level = set_int_priority_level(LEVEL_3);
     remove_elem(&dormidos, p);
     add_ready_queue(p);
+    set_int_priority_level(level);
 }
 
 void reduce_time_slice(void){
@@ -185,4 +198,18 @@ void reduce_time_slice(void){
     }
     
     }
+}
+
+PCB * queue_priority(list * queue){
+    iterator it; 
+    PCB *p1, *p2;
+    iterator_init(queue, &it);
+    p1 = iterator_next(&it);
+
+    while (iterator_has_next(&it))
+    {
+        p2 = iterator_next(&it);
+        if(p2->priority > p1->priority) p1=p2;
+    }
+    return p1;
 }

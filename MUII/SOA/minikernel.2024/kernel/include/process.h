@@ -74,5 +74,6 @@ void remove_sleep_queue(PCB *p);
 
 void reduce_time_slice(void);
 
+PCB * queue_priority(list * queue);
 #endif /* _PROCESS_H */
 

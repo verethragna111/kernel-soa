@@ -21,7 +21,6 @@
 void init_clock_module(void) {
     init_clock_controller(TICK);
 
-
     register_irq_handler(CLOCK_INT,clock_exception_handler);
 
     return;
@@ -31,7 +30,7 @@ void clock_exception_handler(void){
 
     counter_down();
     reduce_time_slice();
-    printk("-> INT. RELOJ\n");
+    //printk("-> INT. RELOJ\n");
     
     return;
 }
