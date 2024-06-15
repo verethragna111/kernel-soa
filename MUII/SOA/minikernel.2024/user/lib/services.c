@@ -45,3 +45,7 @@ int get_priority(void){
 int proc_sleep(unsigned int secs){
     return sys_call(PROC_SLEEP, 1, (long)secs);
 }
+
+int get_char(void){
+    return sys_call(GET_CHAR, 0);
+}

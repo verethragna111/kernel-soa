@@ -30,6 +30,7 @@ int print(char *buf, unsigned int size);
 int get_pid(void);
 int get_priority(void);
 int proc_sleep(unsigned int secs);
+int get_char(void);
 
 #endif /* _SERVICES_H */
 

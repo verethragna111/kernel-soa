@@ -19,5 +19,7 @@ void init_terminal_module(void);
 int do_print(char * buf, int size);
 
 void keyboard_exception_handler(void);
+
+int do_get_char(void);
 #endif /* _TERMINAL_H */
 
