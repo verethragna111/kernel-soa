@@ -179,6 +179,7 @@ void reduce_time_slice(void){
         int level = set_int_priority_level(LEVEL_3);
         remove_ready_queue();
         add_ready_queue(current);  // Se reinsertará con una nueva rodaja
+        printk("-> ACTIVA INTERRUPCIÓN SOFTWARE POR FIN DE RODAJA\n");
         pick_and_activate_next_task(1);
         set_int_priority_level(level);
     }

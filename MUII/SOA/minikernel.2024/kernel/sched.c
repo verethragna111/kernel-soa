@@ -53,10 +53,12 @@ static void wait_for_int(void){
 void add_ready_queue(PCB *p) {
     int level = set_int_priority_level(LEVEL_3);
     int prio=p->priority;
+    /* Inicializamos en el proceso el time_slice a 10 TICKS*/
+    if(p->time_slice == 0 || p->state== BLOCKED) p->time_slice=SLICE;
+    
     p->state=READY;
 
-    /* Inicializamos en el proceso el time_slice a 10 TICKS*/
-    if(p->time_slice == 0) p->time_slice=SLICE;
+    
 
     insert_last(&ready_list[prio], p);
     set_bit(&ready_queues_mask, prio);
