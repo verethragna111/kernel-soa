@@ -186,7 +186,7 @@ void reduce_time_slice(void){
     if(current!=NULL){
     
     int time = current->time_slice;
-    current->time_slice = time - 1;
+    if(current->state == RUNNING) current->time_slice = time - 1;
     
     if(current->time_slice == 0){
         int level = set_int_priority_level(LEVEL_3);
