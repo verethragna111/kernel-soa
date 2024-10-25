@@ -13,6 +13,8 @@
 #include "process.h"
 #include "syscall.h"
 
+/*Prueba
+
 /* Funciones relacionadas con el tratamiento de excepciones */
 
 void init_exception_module(void) {
